@@ -1,0 +1,67 @@
+name: Build and Deploy to Cloud Run
+
+on:
+    push:
+        branches:
+            - main
+            
+env:
+    SERVICE_NAME: ${{ github.event.repository.name }}
+    TRACK: java
+
+
+# Environment variables available to all jobs and steps in this workflow
+
+jobs:
+    setup-build-deploy:
+        name: Setup, Build, and Deploy
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v1
+
+            # Setup gcloud CLI
+            - id: 'auth'
+              uses: 'google-github-actions/auth@v0'
+              with:
+                credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+            # Configure gcloud CLI
+            - name: gcloud Set up
+              run: |
+                  #export SERVICE_NAME=${{ github.event.repository.name }}
+                  #echo $SERVICE_NAME
+                  gcloud config set project us-gcp-ame-con-116-npd-1
+      
+            - name: Image
+              run: |-
+                docker build -t asia.gcr.io/us-gcp-ame-con-116-npd-1/$SERVICE_NAME:$GITHUB_SHA .
+                
+            #Configure docker to use the gcloud command-line tool as a credential helper
+            - run: |
+                  gcloud auth configure-docker -q
+              # Push image to Google Container Registry
+            - name: Build
+              run: |-
+                  docker push asia.gcr.io/us-gcp-ame-con-116-npd-1/$SERVICE_NAME:$GITHUB_SHA
+            - name: Deploy
+              run: |
+                  gcloud run deploy $SERVICE_NAME --region us-west2 --image asia.gcr.io/us-gcp-ame-con-116-npd-1/$SERVICE_NAME:$GITHUB_SHA --max-instances 3 --memory 1000Mi --platform managed --region us-west2 --allow-unauthenticated --vpc-connector='hu-conn' --add-cloudsql-instances='huex-mysql' --set-env-vars=[DBN='test1']
+            #Push artifact into S3 bucket for PIA analysis
+            - name: Artifact
+              run: |
+                  aws configure set default.region us-east-1
+                  aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY }}
+                  aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_KEY }}
+                  export FOLDER=$(echo $SERVICE_NAME | cut -d'-' -f 4)
+                  rm -rf .scannerwork
+                  aws s3 sync . s3://hu-evaluator/hu/22/java/$FOLDER/ --delete
+            #Sonar scanner on current repo
+            - name: Sonar scanner
+              env:
+                  SQ_TOKEN: ${{ secrets.SQ_ADMIN_TOKEN }}
+                  SQ_URL: https://sonarqube.hashedin.com
+                  SCANNER_REPO: .
+              shell: bash
+              run: ./.github/actions/sonar-scanner-runner.sh
