@@ -34,7 +34,7 @@ public class UserFunctionality {
         Map map = new HashMap();
         map.put("data",obj);
         Map mapA = new HashMap();
-        mapA.put("statusCode",200);
+        mapA.put("statusCode",statusCode);
         mapA.put("message",message);
         mapA.put("status",message);
 

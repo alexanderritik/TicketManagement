@@ -3,6 +3,10 @@ package com.hashedin.hu22.entities;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.List;
+import java.util.Collection;
 
 @Entity(name = "movie")
 @Table(name = "movie")
@@ -28,7 +32,9 @@ public class Movie {
 
     private Integer rating;
 
-    private ArrayList<Threatre> threatres;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "movie_id" , referencedColumnName = "id")
+    private List<Threatre> threatres = new ArrayList<>();
 
     private ArrayList<Date> timing;
 
@@ -104,11 +110,11 @@ public class Movie {
         this.rating = rating;
     }
 
-    public ArrayList<Threatre> getThreatres() {
+    public List<Threatre> getThreatres() {
         return threatres;
     }
 
-    public void setThreatres(ArrayList<Threatre> threatres) {
+    public void setThreatres(List<Threatre> threatres) {
         this.threatres = threatres;
     }
 

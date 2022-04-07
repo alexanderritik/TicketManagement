@@ -15,4 +15,7 @@ public interface MovieManagementRepository extends JpaRepository<Movie , Integer
     @Query("SELECT md FROM movie md ORDER BY md.rating ASC")
     List<Movie> sortRating();
 
+    @Query("SELECT md FROM movie md WHERE md.genre LIKE %?1% ORDER BY rating")
+    List<Movie> recomendation(String genre);
+
 }
