@@ -33,6 +33,10 @@ public class Movie {
     private Integer rating;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "rating_id" , referencedColumnName = "id")
+    private List<Rating> ratingList = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "movie_id" , referencedColumnName = "id")
     private List<Threatre> threatres = new ArrayList<>();
 
@@ -124,5 +128,13 @@ public class Movie {
 
     public void setTiming(ArrayList<Date> timing) {
         this.timing = timing;
+    }
+
+    public List<Rating> getRatingList() {
+        return ratingList;
+    }
+
+    public void setRatingList(List<Rating> ratingList) {
+        this.ratingList = ratingList;
     }
 }

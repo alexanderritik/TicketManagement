@@ -3,8 +3,10 @@ package com.hashedin.hu22.controllers;
 import com.hashedin.hu22.Service.UserFunctionality;
 import com.hashedin.hu22.entities.Movie;
 import com.hashedin.hu22.entities.Threatre;
+import com.hashedin.hu22.entities.User;
 import com.hashedin.hu22.repositories.MovieManagementRepository;
 import com.hashedin.hu22.repositories.ThreatreManagementRepository;
+import com.hashedin.hu22.repositories.UserManagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,9 @@ import java.util.Map;
 
 @RestController
 public class MovieManagementRestController {
+
+    @Autowired
+    private UserManagementRepository userManagementRepository;
 
     @Autowired
     private MovieManagementRepository movieManagementRepository;
@@ -22,10 +27,16 @@ public class MovieManagementRestController {
     private UserFunctionality userFunctionality = new UserFunctionality();
 
 
-    @RequestMapping(value = "/movie/add" , method = RequestMethod.POST)
-    public @ResponseBody Map addMovie(@RequestBody Movie movie){
-        Movie m = movieManagementRepository.save(movie);
-        return userFunctionality.sendResposne("Success",200,m);
+    @RequestMapping(value = "/{id}/movie/add" , method = RequestMethod.POST)
+    public @ResponseBody Map addMovie(@PathVariable("id") int id,@RequestBody Movie movie){
+        User u = userManagementRepository.findById(id).get();
+        if(userFunctionality.checkadmin(u)){
+            Movie m = movieManagementRepository.save(movie);
+            return userFunctionality.sendResposne("Success",200,m);
+        }else{
+            return userFunctionality.sendResposne("failed",204,"Invalid admin");
+        }
+
     }
 
     @RequestMapping(value = "/movie/all" , method = RequestMethod.GET)
@@ -47,7 +58,6 @@ public class MovieManagementRestController {
     public @ResponseBody Map sortedRating(){
         return userFunctionality.sendResposne("Success",200,movieManagementRepository.sortRating());
     }
-
 
     @RequestMapping(value = "/movie/{id}/threatre" , method = RequestMethod.POST)
     public @ResponseBody Map addMovieThreatre(@PathVariable("id") int id , @RequestBody Threatre threatre){

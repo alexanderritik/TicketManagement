@@ -21,6 +21,18 @@ public class UserFunctionality {
         }
     }
 
+    public boolean checkadmin(User user){
+        if(user==null){
+            return false;
+        }else {
+            if(user.getRole().equalsIgnoreCase("Admin")) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
 
     public Boolean verifyUser(User user){
         if(user==null){

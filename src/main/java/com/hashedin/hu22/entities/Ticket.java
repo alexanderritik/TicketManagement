@@ -1,8 +1,9 @@
 package com.hashedin.hu22.entities;
 
 import javax.persistence.*;
+import java.util.Date;
 
-@Entity
+@Entity(name = "ticket")
 @Table(name = "ticket")
 public class Ticket {
 
@@ -17,7 +18,7 @@ public class Ticket {
 
     private Integer seat;
 
-    private String time;
+    private Date time;
 
     public Integer getId() {
         return id;
@@ -51,13 +52,11 @@ public class Ticket {
         this.seat = seat;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
-
-
 }
