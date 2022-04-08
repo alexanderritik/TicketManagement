@@ -36,7 +36,8 @@ public class TicketManagementRestController {
             User u = userManagementRepository.findById(id).get();
             Movie m = movieManagementRepository.findById(id1).get();
             u.getTickets().add(ticket);
-            return userFunctionality.sendResposne("Success",200,userManagementRepository.save(u));
+            userManagementRepository.save(u);
+            return userFunctionality.sendResposne("Success",200,"Ticket is added succesfully");
         }catch (Exception e){
             return userFunctionality.sendResposne("failed",204,"Invalid user or movie");
         }
@@ -48,7 +49,8 @@ public class TicketManagementRestController {
             //verify user && verify movie
             User u = userManagementRepository.findById(id).get();
             Movie m = movieManagementRepository.findById(id1).get();
-            return userFunctionality.sendResposne("Success",200,ticketManagementRepository.save(ticket));
+            ticketManagementRepository.save(ticket);
+            return userFunctionality.sendResposne("Success",200,"Ticket is updated successfully");
         }catch (Exception e){
             return userFunctionality.sendResposne("failed",204,"Invalid user or movie");
         }

@@ -31,7 +31,7 @@ public class UserManagementRestController {
     public @ResponseBody Map createUser(@RequestBody User user){
 
         User u = userManagementRepository.save(user);
-        return userFunctionality.sendResposne("Success",200,u);
+        return userFunctionality.sendResposne("Success",200,"The user is success fully added");
     }
 
     @RequestMapping(value = "/user/all" , method = RequestMethod.GET)
@@ -47,7 +47,13 @@ public class UserManagementRestController {
 
     @RequestMapping(value = "/user/{id}" , method = RequestMethod.GET)
     public @ResponseBody Map getUserDetail(@PathVariable("id") int id){
-        return userFunctionality.sendResposne("Success",200,userManagementRepository.findById(id).get());
+        try {
+            User u  =userManagementRepository.findById(id).get();
+             return userFunctionality.sendResposne("Success", 200, u);
+        }
+        catch(Exception e){
+            return userFunctionality.sendResposne("Success", 200, "The user ID no found");
+        }
     }
 
     @RequestMapping(value = "/user/update/{id}" , method = RequestMethod.PUT)
@@ -56,7 +62,8 @@ public class UserManagementRestController {
             User u = userManagementRepository.findById(id).get();
             if(userFunctionality.verifyUser(u)){
                 u.setGenre(user.getGenre());
-                return  userFunctionality.sendResposne("Success",200,userManagementRepository.save(u));
+                userManagementRepository.save(u);
+                return  userFunctionality.sendResposne("Success",200,"User field is modified");
             }else{
                 return userFunctionality.sendResposne("Failed",204,"Invalid user update");
             }
@@ -113,7 +120,8 @@ public class UserManagementRestController {
                 int tempRating = m.getRating();
                 m.setRating(tempRating+rating.getRating());
                 m.getRatingList().add(rating);
-                return userFunctionality.sendResposne("Success",200,movieManagementRepository.save(m));
+                movieManagementRepository.save(m);
+                return userFunctionality.sendResposne("Success",200,"Rating is successfully added by the user");
             }
 
         }catch (Exception e){

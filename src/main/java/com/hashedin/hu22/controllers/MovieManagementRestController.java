@@ -32,7 +32,7 @@ public class MovieManagementRestController {
         User u = userManagementRepository.findById(id).get();
         if(userFunctionality.checkadmin(u)){
             Movie m = movieManagementRepository.save(movie);
-            return userFunctionality.sendResposne("Success",200,m);
+            return userFunctionality.sendResposne("Success",200,"Movie is added sucessfullly");
         }else{
             return userFunctionality.sendResposne("failed",204,"Invalid admin");
         }
@@ -46,7 +46,14 @@ public class MovieManagementRestController {
 
     @RequestMapping(value = "/movie/{id}" , method = RequestMethod.POST)
     public @ResponseBody Map getMovieIdDetail(@PathVariable("id") int id){
-        return userFunctionality.sendResposne("Success",200,movieManagementRepository.findById(id).get());
+
+        try{
+            return userFunctionality.sendResposne("Success",200,movieManagementRepository.findById(id).get());
+        }catch(Exception e){
+            return userFunctionality.sendResposne("Success",200,"Movie id is Invalid");
+        }
+
+
     }
 
     @RequestMapping(value = "/movie/{genre}" , method = RequestMethod.GET)
@@ -76,7 +83,8 @@ public class MovieManagementRestController {
     @RequestMapping(value = "/movie/update/{id}" , method = RequestMethod.PUT)
     public @ResponseBody Map updateMovieDetail(@PathVariable("id") int id , @RequestBody Movie movie){
         try{
-            return userFunctionality.sendResposne("Success",200,movieManagementRepository.save(movie));
+            movieManagementRepository.save(movie);
+            return userFunctionality.sendResposne("Success",200,"Movie updated sucessfully");
         }catch (Exception e){
             return userFunctionality.sendResposne("failed",204,"Movie id is not found");
         }
@@ -86,7 +94,8 @@ public class MovieManagementRestController {
     @RequestMapping(value = "/movie/update/threatre" , method = RequestMethod.PUT)
     public @ResponseBody Map updateMovieThreatreDetail(@RequestBody Threatre threatre){
         try{
-            return userFunctionality.sendResposne("Success",200,threatreManagementRepository.save(threatre));
+            threatreManagementRepository.save(threatre);
+            return userFunctionality.sendResposne("Success",200,"Threatre added successfully");
         }catch (Exception e){
             return userFunctionality.sendResposne("failed",204,"Movie id is not found");
         }
